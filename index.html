@@ -1,1 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Quantity Validation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
 
+    .product-container {
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      font-size: 24px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #555;
+      margin: 5px 0;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-size: 16px;
+      color: #333;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+
+    .error-message {
+      color: #d9534f;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      display: inline-block;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #007bff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px 0;
+    }
+
+    button:disabled {
+      background-color: #bbb;
+      cursor: not-allowed;
+    }
+
+    #add-to-quote-btn {
+      background-color: #28a745;
+    }
+
+    #add-to-quote-btn:hover {
+      background-color: #218838;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="product-container">
+    <h2>Product Name</h2>
+    <p>MOQ: <strong>1000</strong></p>
+    <p>Order Multiple: <strong>200</strong></p>
+    <p>Available Stock: <strong id="stock">5000</strong></p>
+    
+    <label for="quantity-input">Enter Quantity:</label>
+    <input type="number" id="quantity-input" value="1000" min="1000" step="200" />
+    
+    <p id="error-message" class="error-message"></p>
+    
+    <button id="buy-now-btn">Buy Now</button>
+    <button id="add-to-quote-btn">Add to Quote</button>
+  </div>
+
+  <script>
+    const moq = 1000; // Minimum Order Quantity
+    const orderMultiple = 200; // Order Multiple
+    const stock = 5000; // Available Stock
+    const quantityInput = document.getElementById('quantity-input');
+    const errorMessage = document.getElementById('error-message');
+    const buyNowBtn = document.getElementById('buy-now-btn');
+
+    // Pre-fill input with MOQ
+    quantityInput.value = moq;
+
+    // Initial validation on page load
+    validateQuantity(parseInt(quantityInput.value, 10));
+
+    // Event listener for quantity input
+    quantityInput.addEventListener('input', () => {
+      const enteredQuantity = parseInt(quantityInput.value, 10);
+      validateQuantity(enteredQuantity);
+    });
+
+    function validateQuantity(enteredQuantity) {
+      if (isNaN(enteredQuantity) || enteredQuantity <= 0) {
+        // Invalid input
+        errorMessage.textContent = 'Please enter a valid quantity.';
+        buyNowBtn.disabled = true;
+      } else if (enteredQuantity < moq) {
+        // Quantity less than MOQ
+        errorMessage.textContent = `Minimum ${moq} quantity required.`;
+        buyNowBtn.disabled = true;
+      } else if ((enteredQuantity - moq) % orderMultiple !== 0) {
+        // Not a multiple of orderMultiple
+        errorMessage.textContent = `Quantity must be a multiple of ${orderMultiple} after MOQ (${moq}).`;
+        buyNowBtn.disabled = true;
+      } else if (enteredQuantity > stock) {
+        // Exceeds available stock
+        errorMessage.textContent = `If you want more than available (${stock}), please request a quote or contact sales.`;
+        buyNowBtn.disabled = true;
+      } else {
+        // Valid input
+        errorMessage.textContent = '';
+        buyNowBtn.disabled = false;
+      }
+    }
+  </script>
+
+</body>
+</html>
